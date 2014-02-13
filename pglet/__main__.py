@@ -143,6 +143,7 @@ def main():
         tornado.web.url(r'/static/(img/.*)', tornado.web.StaticFileHandler, {'path': static_path}),
         tornado.web.url(r'/static/(js/.*)', tornado.web.StaticFileHandler, {'path': static_path}),
         tornado.web.url(r'/__stub__$', StubHandler),
+        tornado.web.url(r'/(.*)', PageErrorHandler, kwargs=dict(error=404)),
     ]
 
     application = tornado.web.Application(handlers=handlers, **settings)
