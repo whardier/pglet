@@ -44,9 +44,11 @@ define('postgresql_dsn', default='dbname=pglet', type=str, group='PostgreSQL')
 ## ┗━┛╹ ╹┗━┛┗━╸╹ ╹╹ ╹╹ ╹╺┻┛┗━╸┗━╸╹┗╸
 
 class BaseHandler(tornado.web.RequestHandler):
-    def initialize(self, **kwargs):
+    def initialize(self, *args, **kwargs):
 
-        super(BaseHandler, self).initialize(**kwargs)
+        self.error = kwargs.pop('error', None)
+
+        super(BaseHandler, self).initialize(*args, **kwargs)
 
         self.kwargs = kwargs
 
@@ -75,10 +77,10 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class PageErrorHandler(BaseHandler):
     def get(self, *args, **kwargs):
-        self.send_error(self.kwargs['error'])
+        self.send_error(self.error)
 
     def post(self, *args, **kwargs):
-        self.send_error(self.kwargs['error'])
+        self.send_error(self.error)
 
 ## ┏━┓╺┳╸╻ ╻┏┓ ╻ ╻┏━┓┏┓╻╺┳┓╻  ┏━╸┏━┓
 ## ┗━┓ ┃ ┃ ┃┣┻┓┣━┫┣━┫┃┗┫ ┃┃┃  ┣╸ ┣┳┛
@@ -143,7 +145,7 @@ def main():
         tornado.web.url(r'/static/(img/.*)', tornado.web.StaticFileHandler, {'path': static_path}),
         tornado.web.url(r'/static/(js/.*)', tornado.web.StaticFileHandler, {'path': static_path}),
         tornado.web.url(r'/__stub__$', StubHandler),
-        tornado.web.url(r'/(.*)', PageErrorHandler, kwargs=dict(error=404)),
+        #tornado.web.url(r'/(.*)', PageErrorHandler, kwargs=dict(error=404)),
     ]
 
     application = tornado.web.Application(handlers=handlers, **settings)
